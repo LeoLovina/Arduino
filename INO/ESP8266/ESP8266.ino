@@ -1,9 +1,11 @@
 #define D1 5
+#define D2 4
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   pinMode(D1, OUTPUT) ;
+  pinMode(D2, INPUT) ;
   for(int i =0; i< 3 ;i++){
     digitalWrite(D1, HIGH);       // sets the digital pin 13 on
     delay(1000);                  // waits for a second
@@ -22,6 +24,13 @@ void loop() {
     else         
       digitalWrite(D1, LOW);
   }
+
+  int switchValue = digitalRead(D2);
+  Serial.println(switchValue);
+  if (switchValue)
+      digitalWrite(D1, HIGH);
+    else         
+      digitalWrite(D1, LOW);
   
 //  Serial.println("Hello World");
 //  delay(1000);
