@@ -1,5 +1,7 @@
 /*
   d1 min board
+    1. 利用 D3 讀取 switch (設定為 Input_Pullup)
+    2. 使用 ESP8266WiFi 程式庫 連線 wifi
   wifi
   by 陳建榮
 
@@ -13,10 +15,7 @@
 
 unsigned long previousTime = 0;
 void setup() {
-
-  // put your setup code here, to run once:
-  Serial.begin(115200);
-
+  // initialize wifi
   Serial.begin(115200);
   Serial.println();
   WiFi.begin("505-AP", "mis505505");
@@ -30,9 +29,7 @@ void setup() {
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
 
-
   pinMode(READ_PIN, INPUT_PULLUP) ;
-
   pinMode(D1, OUTPUT) ;
   pinMode(D0, OUTPUT) ;
 
