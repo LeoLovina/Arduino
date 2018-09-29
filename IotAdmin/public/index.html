@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Welcome to Firebase Hosting</title>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+  <script src="javascript/site.js"></script>
+
+  <!-- update the version number as needed -->
+  <script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
+  <!-- include only the Firebase features as you need -->
+  <!-- <script defer src="/__/firebase/5.4.2/firebase-auth.js"></script>
+  <script defer src="/__/firebase/5.4.2/firebase-database.js"></script>
+  <script defer src="/__/firebase/5.4.2/firebase-messaging.js"></script>
+  <script defer src="/__/firebase/5.4.2/firebase-storage.js"></script> -->
+  <!-- initialize the SDK after all desired features are loaded -->
+  <script defer src="/__/firebase/init.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="css/site.css">
+  <style media="screen">
+  </style>
+</head>
+
+<body>
+  <H1 id="Readtime database"></H1>
+  Database Ref: <input type="text" id="textRef" value="path"/> 
+  JSON value: <textarea id="jsonValue" >{"name":"Leo Chen",
+    "id" : "1234567" 
+   } </textarea>
+    <br/>
+  <button  type="button" id="btnRealtime" > Set database value </button>
+
+<hr/>
+
+  <div id="message">
+    <h2>Welcome Hehe</h2>
+    <h1>Firebase Hosting Setup Complete</h1>
+    <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something
+      extraordinary!</p>
+    <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+  </div>
+  <p id="load">Firebase SDK Loading&hellip;</p>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+      // // The Firebase SDK is initialized and available here!
+      //
+      // firebase.auth().onAuthStateChanged(user => { });
+      // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+      // firebase.messaging().requestPermission().then(() => { });
+      // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+      //
+      // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+
+      try {
+        let app = firebase.app();
+        let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] === 'function');
+        document.getElementById('load').innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
+      } catch (e) {
+        console.error(e);
+        document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
+      }
+    });
+  </script>
+
+   <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyDn1uLqls7o656jzanAYUQCOGHN524H9uU",
+      authDomain: "test-9f38d.firebaseapp.com",
+      databaseURL: "https://test-9f38d.firebaseio.com",
+      projectId: "test-9f38d",
+      storageBucket: "test-9f38d.appspot.com",
+      messagingSenderId: "404956267165"
+    };
+    firebase.initializeApp(config);
+    var bigOne = document.getElementById("bigOne");
+
+    // get a reference to database instance 
+    var database = firebase.database();
+
+    // var dbRef = firebase.database().ref().child('text');
+    // dbRef.on('value', snap=>bigOne.innerText = snap.val());
+
+    // function onTest(){
+    //   alert('haha');
+    //   writeUserData("A001", "Leo Chen", 'email@gmail.com', "imageUrl");
+    // }
+
+function writeUserData(userId, name, email, imageUrl) {
+  firebase.database().ref('users/' + userId).set({
+    username: name,
+    email: email,
+    profile_picture : imageUrl
+  });
+}
+
+  </script>
+</body>
+
+</html>
