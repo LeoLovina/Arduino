@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+    crossorigin="anonymous">
+
+  <title>IoT Arduino Control</title>
+</head>
+
+<body>
+  <div class="container">
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <h1 class="display-2">物聯網實作</h1>
+        <p class="lead text-info">收集資料和傳送資料到雲端、輕鬆載入和分析該資訊，且提供管理裝置的能力！ 隨時可溝通。可靠地擴展。數兆則訊息。數十億個裝置。</p>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <!-- Relay 控制-->
+    <div class="jumbotron">
+      <h1>Relay 燈泡控制</h1>
+      <div class="btn-group btn-group-large" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-success" id="openBtn_RelayBulb">ON</button>
+        <button type="button" class="btn btn-danger" id="closeBtn_RelayBulb">OFF</button>
+      </div>
+    </div>
+    <div class="jumbotron">
+      <h1>Relay 風扇控制</h1>
+      <div class="btn-group btn-group-large" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-success" id="openBtn_RelayFan">ON</button>
+        <button type="button" class="btn btn-danger" id="closeBtn_RelayFan">OFF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyDcMu--bU5K9JVa7AMM_C910pCSDJgC0ys",
+      authDomain: "arduino-ff0bc.firebaseapp.com",
+      databaseURL: "https://arduino-ff0bc.firebaseio.com",
+      projectId: "arduino-ff0bc",
+      storageBucket: "arduino-ff0bc.appspot.com",
+      messagingSenderId: "687040984573"
+    };
+    firebase.initializeApp(config);
+
+    // Get a reference to the database service
+    var database = firebase.database();
+
+    $(document).ready(function () {
+      console.log("ready!");
+      var rootPath = "iot0901";
+      function initRelay(refNodePath) {
+        var relayRef = database.ref(rootPath+"/"+refNodePath);
+        relayRef.on('value', function (snapshot) {
+          var relayVal = !snapshot.val();
+          if (relayVal) {
+            $('#openBtn_'+refNodePath).removeClass('btn-success').addClass('btn-secondary');
+            $('#closeBtn_'+refNodePath).removeClass('btn-secondary').addClass('btn-danger');
+          } else {
+            $('#openBtn_'+refNodePath).removeClass('btn-secondary').addClass('btn-success');
+            $('#closeBtn_'+refNodePath).removeClass('btn-danger').addClass('btn-secondary');
+          }
+          console.log(refNodePath+ ' relayVal : ' + relayVal);
+        });
+
+        function getNodePathById(id){
+          var index = id.indexOf('_');
+          var nodePath = id.substring(index+1);
+          return nodePath;
+        }
+
+        $('#openBtn_'+refNodePath).click(function () {
+          var nodePath = getNodePathById($(this).attr('id'));
+          var relayRef = database.ref(rootPath+"/"+nodePath);
+          relayRef.set(true);
+        });
+
+        $('#closeBtn_'+refNodePath).click(function () {
+          var nodePath = getNodePathById($(this).attr('id'));
+          var relayRef = database.ref(rootPath+"/"+nodePath);
+          relayRef.set(false);
+        });
+      }
+      initRelay('RelayBulb');
+      initRelay('RelayFan');
+    });
+  </script>
+</body>
+
+</html>
