@@ -24,10 +24,12 @@
 // Set connection information.
 #define FIREBASE_HOST "arduino-ff0bc.firebaseio.com"
 #define FIREBASE_AUTH "qGXsCir7KVVbAe2H4DVwWJBgulLThlfHBiA1inqZ"
-#define WIFI_SSID "admin"
-#define WIFI_PASSWORD "leochenviewaa"
-//#define WIFI_SSID "Xiaomi_55-ST"
-//#define WIFI_PASSWORD "12345678"
+//#define WIFI_SSID "admin"
+//#define WIFI_PASSWORD "leochenviewaa"
+#define WIFI_SSID "IOT505"
+#define WIFI_PASSWORD "12345678"
+//#define WIFI_SSID "505-AP"
+//#define WIFI_PASSWORD "mis505505"
 
 // Set pin value
 #define READ_PIND3 0    // GPIO: 0,  d1 min:D3
@@ -125,6 +127,8 @@ void initialTemperatureHumidity() {
 
 
 void loop() {
+//  readTemperatureHumidity();
+//  readMagneticSring();
 //  readSwitch();
     
   int soundValue = analogRead(A0);
@@ -134,9 +138,8 @@ void loop() {
     unsigned long currentTime = millis();
     if (abs(currentTime - previousTime) > 1000) {
       previousTime = currentTime;
-      readTemperatureHumidity();
       setLEDStatus();
-      readMagneticSring();
+     // readMagneticSring();
     }
   }  
 }
@@ -145,7 +148,16 @@ void setLEDStatus(){
     currentLedValue = !currentLedValue;
     digitalWrite(RelayD2, currentLedValue);
     Serial.println(String("Relay Change.....") + currentLedValue);
-    Firebase.setBool(FirebaseSound_LED, currentLedValue);
+    if (currentLedValue)
+      Firebase.setString(FirebaseSound_LED, "On");
+    else 
+      Firebase.setString(FirebaseSound_LED, "Off");
+    
+//    Firebase.setBool(FirebaseSound_LED, currentLedValue);
+    if (Firebase.failed()) {
+      Serial.print("setLEDStatus setting /number failed:");
+      Serial.println(Firebase.error());  
+  }
 }
 
 void readTemperatureHumidity(){  
@@ -186,6 +198,10 @@ void readMagneticSring(){
     Serial.println("************Magnetic spring value is closed");  
     Firebase.setString(FirebaseWindow, "Close");
   }
+  if (Firebase.failed()) {
+    Serial.print("readMagneticSring setting /number failed:");
+    Serial.println(Firebase.error());  
+  }  
 }
 
 // setup pullup on READ_PIND3 
