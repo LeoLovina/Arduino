@@ -33,6 +33,53 @@
     </div>
   </div>
 
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 col-md-12">
+        <div class="card">
+          <img class="card-img-top" src="images/htu21D.png" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">數位相對濕度感測器</h5>
+            <p class="card-text">Measurement Specialties HTU21D數位相對濕度感測器嵌入於回流焊接雙列平面無導線(DFN)封裝，面積3 x
+              3mm、高度1mm，可提供數位、I²C格式的已校準線性化訊號。HTU21D感測器是專用的濕度與溫度隨插即用傳感器，適用於需要可靠性與準確測量的OEM應用。透過模組化濕度與溫度數位輸出，可提供與微控制器直接連接的介面。</p>
+            <button type="button" class="btn btn-primary">
+              濕度 <span class="badge badge-light" id="Temperature">4</span>
+            </button>
+            <button type="button" class="btn btn-primary">
+              濕度 <span class="badge badge-light" id="Humidity">4</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <div class="card">
+          <img class="card-img-top" src="images/soundSensor.png" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">聲音感應模組</h5>
+            <p class="card-text">聲音感測模組是一個麥克風元件。基於功率放大器LM386 電容式麥克風，它可以用於檢測偵測環境中的聲音強度。而偵測到的資料輸出的值可以由電位進行調整。</p>
+            <button type="button" class="btn btn-primary">
+              聲音感應模組 <span class="badge badge-light" id="Sound_LED">4</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <div class="card">
+          <img class="card-img-top" src="images/reedSensor.png" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">磁簧開關</h5>
+            <p class="card-text">磁簧开关是由两片磁簧片(通常由铁和镍这两种金属所组成的) 密封在玻璃管内。 两片磁簧片呈重迭状况但中间间隔有一小空隙，外来适当的磁场将会使两片磁簧片接触。</p>
+            <button type="button" class="btn btn-primary">
+              目前窗戶關關狀態 <span class="badge badge-light" id="Window">4</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -41,7 +88,7 @@
     crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
     crossorigin="anonymous"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.5.4/firebase.js"></script>
   <script>
     // Initialize Firebase
     var config = {
@@ -62,32 +109,39 @@
       var relayRef = database.ref('iot0901/relay');
       relayRef.on('value', function (snapshot) {
         var relayVal = snapshot.val();
-        if (relayVal){
+        if (relayVal) {
           $('#openBtn').removeClass('btn-success').addClass('btn-secondary');
           $('#closeBtn').removeClass('btn-secondary').addClass('btn-danger');
-        }
-        else {
+        } else {
           $('#openBtn').removeClass('btn-secondary').addClass('btn-success');
           $('#closeBtn').removeClass('btn-danger').addClass('btn-secondary');
         }
-        console.log('relayVal : '+ relayVal);
+        console.log('relayVal : ' + relayVal);
       });
 
-      $('#openBtn').click(function(){
+      $('#openBtn').click(function () {
         relayRef.set(true);
       });
 
-      $('#closeBtn').click(function(){
+      $('#closeBtn').click(function () {
         relayRef.set(false);
       });
-
       // $('#btnRealtime').click(onSetValue);
     });
 
-    // function onTest() {
-    //   alert('haha');
-    //   writeUserData("A001", "Leo Chen", 'email@gmail.com', "imageUrl");
-    // }
+    $(document).ready(function () {
+      setupFirebaseSensor('iot0901/Temperature');
+      setupFirebaseSensor('iot0901/Humidity');
+      setupFirebaseSensor('iot0901/Sound_LED');
+      setupFirebaseSensor('iot0901/Window');
+      function setupFirebaseSensor(realtimePath) {
+        var relayRef = database.ref(realtimePath);
+        relayRef.on('value', function (snapshot) {
+          var relayVal = snapshot.val();
+          $('#' + snapshot.key).html(''+relayVal);
+        });
+      }
+    });
   </script>
 </body>
 
