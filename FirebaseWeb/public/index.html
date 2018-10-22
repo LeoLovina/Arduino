@@ -43,7 +43,7 @@
             <p class="card-text">Measurement Specialties HTU21D數位相對濕度感測器嵌入於回流焊接雙列平面無導線(DFN)封裝，面積3 x
               3mm、高度1mm，可提供數位、I²C格式的已校準線性化訊號。HTU21D感測器是專用的濕度與溫度隨插即用傳感器，適用於需要可靠性與準確測量的OEM應用。透過模組化濕度與溫度數位輸出，可提供與微控制器直接連接的介面。</p>
             <button type="button" class="btn btn-primary">
-              濕度 <span class="badge badge-light" id="Temperature">4</span>
+              溫度 <span class="badge badge-light" id="Temperature">4</span>
             </button>
             <button type="button" class="btn btn-primary">
               濕度 <span class="badge badge-light" id="Humidity">4</span>
@@ -80,6 +80,41 @@
     </div>
   </div>
 
+  <!-- RFID -->
+  <div class="container">
+    <div class="jumbotron">
+      <h1 class="display-4">RFID門禁控制</h1>
+      <table class="table" id="tableRFIDCard">
+        <thead>
+          <tr>
+            <th scope="col">Card ID</th>
+            <th scope="col">時間</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+
+          </tr>
+          <tr>
+            <th scope="row">2</th>
+            <td>Jacob</td>
+
+          </tr>
+          <tr>
+            <th scope="row">3</th>
+            <td>Larry</td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div id='hiddenDiv'>
+
+  </div>
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -126,7 +161,6 @@
       $('#closeBtn').click(function () {
         relayRef.set(false);
       });
-      // $('#btnRealtime').click(onSetValue);
     });
 
     $(document).ready(function () {
@@ -134,12 +168,50 @@
       setupFirebaseSensor('iot0901/Humidity');
       setupFirebaseSensor('iot0901/Sound_LED');
       setupFirebaseSensor('iot0901/Window');
+
       function setupFirebaseSensor(realtimePath) {
         var relayRef = database.ref(realtimePath);
         relayRef.on('value', function (snapshot) {
           var relayVal = snapshot.val();
-          $('#' + snapshot.key).html(''+relayVal);
+          $('#' + snapshot.key).html('' + relayVal);
         });
+      }
+    });
+
+    $(document).ready(function () {
+      // remove all rows from tableRFIDCard
+      $('#tableRFIDCard tbody').empty();
+      var realtimePath = 'iot0901/InRecords'
+      var relayRef = database.ref(realtimePath + "/name");
+      relayRef.on('child_added', function (snapshot) {
+        var val = snapshot.val();
+        var key = snapshot.key;
+        // put data in hidden field
+        $("#hiddenDiv").append('<input type="hidden" id="' + key + '"  value="' + val + '">');
+        // setup listen event
+        setupFirebaseRFID(realtimePath + "/" + key);
+      });
+
+      function setupFirebaseRFID(realtimePath) {
+        var relayRef = database.ref(realtimePath);
+        relayRef.on('child_added', function (snapshot) {
+          var timestamp = snapshot.val() || 0;
+          var val = new Date(timestamp);
+          var key = snapshot.ref.parent.getKey();
+          // read card's owner (name) from hidden field
+          var name = $('#' + key).val();
+          var newRowContent = "<tr><td>" + name + "</td><td>" + getYYYYMMDD(val) + "</td></tr>";
+          $('#tableRFIDCard tbody').append(newRowContent);
+        });
+      }
+
+      function getYYYYMMDD(d) {
+        return d.getFullYear() + " " +
+          ("00" + (d.getMonth() + 1)).slice(-2) + "/" +
+          ("00" + d.getDate()).slice(-2) + "/" +
+          ("00" + d.getHours()).slice(-2) + ":" +
+          ("00" + d.getMinutes()).slice(-2) + ":" +
+          ("00" + d.getSeconds()).slice(-2);
       }
     });
   </script>
