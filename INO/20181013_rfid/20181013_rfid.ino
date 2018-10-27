@@ -22,18 +22,18 @@
 // Set connection information.
 #define FIREBASE_HOST "arduino-ff0bc.firebaseio.com"
 #define FIREBASE_AUTH "qGXsCir7KVVbAe2H4DVwWJBgulLThlfHBiA1inqZ"
-#define WIFI_SSID "admin"
-#define WIFI_PASSWORD "leochenviewaa"
+//#define WIFI_SSID "admin"
+//#define WIFI_PASSWORD "leochenviewaa"
 //#define WIFI_SSID "IOT505"
 //#define WIFI_PASSWORD "12345678"
-//#define WIFI_SSID "505-AP"
-//#define WIFI_PASSWORD "mis505505"
+#define WIFI_SSID "505-AP"
+#define WIFI_PASSWORD "mis505505"
 
 // Set pin value
 #define READ_PIND3  0   // GPIO: 0,  d1 min:D3
 #define READ_PIND4  2   // GPIO: 2,  d1 min:D4
 #define LedD1       5   // GPIO: 5,  d1 min D1
-#define RelayD2     4   // GPIO: 4,  d1 min D2
+#define PWMD2       4   // GPIO: 4,  d1 min D2
 
 #define FirebaseRFID "iot0901/RFID"
 #define FirebaseWindow "iot0901/Window"
@@ -58,15 +58,29 @@ void setup() {
   Serial.println();
   initialWifi();
   initialFirebase();
+  initRFID();
 
   // initialize pin
   pinMode(READ_PIND3, INPUT_PULLUP); 
-  pinMode(READ_PIND4, INPUT_PULLUP); 
+//  pinMode(READ_PIND4, INPUT_PULLUP); 
+  pinMode(READ_PIND4, OUTPUT); 
   pinMode(LedD1, OUTPUT) ;
-  pinMode(RelayD2, OUTPUT) ;
+  pinMode(PWMD2, OUTPUT) ;
 
-  // RDIF
-  SPI.begin(); // Init SPI bus
+//  SPI.begin(); // Init SPI bus
+//  rfid.PCD_Init(); // Init MFRC522 
+//
+//  for (byte i = 0; i < 6; i++) {
+//    key.keyByte[i] = 0xFF;
+//  }
+//
+//  Serial.println(F("This code scan the MIFARE Classsic NUID."));
+//  Serial.print(F("Using the following key:"));
+//  printHex(key.keyByte, MFRC522::MF_KEY_SIZE);
+}
+
+void initRFID(){
+    SPI.begin(); // Init SPI bus
   rfid.PCD_Init(); // Init MFRC522 
 
   for (byte i = 0; i < 6; i++) {
@@ -105,6 +119,13 @@ void initialFirebase(){
 }
 
 void loop() {
+//  for (int i=0; i<256; i++){
+//    analogWrite(READ_PIND4, i/255);
+//    delay(500);
+//  }
+//  digitalWrite(PWMD2,1);
+  
+  
   readRFIDTag();
   
 //  readMagneticSring();
