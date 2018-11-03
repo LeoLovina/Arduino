@@ -88,6 +88,7 @@
         <thead>
           <tr>
             <th scope="col">Card ID</th>
+            <th scope="col">姓名</th>
             <th scope="col">時間</th>
 
           </tr>
@@ -96,17 +97,7 @@
           <tr>
             <th scope="row">1</th>
             <td>Mark</td>
-
-          </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td>Larry</td>
-
+            <td>1970-1-1</td>
           </tr>
         </tbody>
       </table>
@@ -181,6 +172,25 @@
     $(document).ready(function () {
       // remove all rows from tableRFIDCard
       $('#tableRFIDCard tbody').empty();
+
+      // order by value
+//      var recordsRef = database.ref('iot0901/InRecords/1d_9_5d_f4_');
+      // var recordsRef = database.ref('iot0901/InRecords');
+      // var sortedRecords = recordsRef.orderByValue().limitToLast(2);
+      // sortedRecords.on('value', function (childSnapshot, prevChildKey) {
+      //   var addedData = childSnapshot.val();
+      //   console.log(addedData);
+      // });
+
+      // order by key
+      // var recordsRef = database.ref('iot0901/InRecords');
+      // var sortedRecords = recordsRef.orderByKey().limitToLast(10);
+      // sortedRecords.on('child_added', function (childSnapshot) {
+      //   var addedData = childSnapshot.val();
+      //   console.log(addedData);
+      // });
+
+
       var realtimePath = 'iot0901/InRecords'
       var relayRef = database.ref(realtimePath + "/name");
       relayRef.on('child_added', function (snapshot) {
@@ -193,14 +203,21 @@
       });
 
       function setupFirebaseRFID(realtimePath) {
-        var relayRef = database.ref(realtimePath);
-        relayRef.on('child_added', function (snapshot) {
+        console.log('setup realtimePath=' + realtimePath);
+        var recordsRef = database.ref(realtimePath);
+        //var sortedRecords = recordsRef.orderByKey().limitToLast(20);
+        var sortedRecords = recordsRef.orderByValue().limitToLast(3);
+        sortedRecords.on('child_added', function (snapshot) {
+          var addedData = snapshot.val();
+          console.log(addedData);
           var timestamp = snapshot.val() || 0;
           var val = new Date(timestamp);
           var key = snapshot.ref.parent.getKey();
+          var carId = key.split('_').join(' ').toUpperCase();
           // read card's owner (name) from hidden field
           var name = $('#' + key).val();
-          var newRowContent = "<tr><td>" + name + "</td><td>" + getYYYYMMDD(val) + "</td></tr>";
+
+          var newRowContent = "<tr><td>" + carId + "</td><td>" + name + "</td><td>" + getYYYYMMDD(val) + "</td></tr>";
           $('#tableRFIDCard tbody').append(newRowContent);
         });
       }
