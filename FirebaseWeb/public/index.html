@@ -35,7 +35,7 @@
 
   <div class="container">
     <div class="row">
-      <div class="col-lg-4 col-md-12">
+      <div class="col-lg-3 col-md-12">
         <div class="card">
           <img class="card-img-top" src="images/htu21D.png" alt="Card image cap">
           <div class="card-body">
@@ -52,7 +52,7 @@
         </div>
       </div>
 
-      <div class="col-lg-4 col-md-6">
+      <div class="col-lg-3 col-md-4">
         <div class="card">
           <img class="card-img-top" src="images/soundSensor.png" alt="Card image cap">
           <div class="card-body">
@@ -65,7 +65,7 @@
         </div>
       </div>
 
-      <div class="col-lg-4 col-md-6">
+      <div class="col-lg-3 col-md-4">
         <div class="card">
           <img class="card-img-top" src="images/reedSensor.png" alt="Card image cap">
           <div class="card-body">
@@ -73,6 +73,20 @@
             <p class="card-text">磁簧开关是由两片磁簧片(通常由铁和镍这两种金属所组成的) 密封在玻璃管内。 两片磁簧片呈重迭状况但中间间隔有一小空隙，外来适当的磁场将会使两片磁簧片接触。</p>
             <button type="button" class="btn btn-primary">
               目前窗戶關關狀態 <span class="badge badge-light" id="Window">4</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-4">
+        <div class="card">
+          <img class="card-img-top" src="images/31gegBx9pVL._SY355_.jpg" alt="Dust image">
+          <div class="card-body">
+            <h5 class="card-title">Sharp 空污傳感器</h5>
+            <p class="card-text">harp 空污傳感器 GP2Y1010AU0F偵測空氣懸浮微粒汙染PM2.5
+              資料線(黃)接 ESP8266 A0接腳，5v(紅線)和接地(黑線)直接接到麵包板上，這樣就可以了。</p>
+            <button type="button" class="btn btn-primary">
+              懸浮微粒 <span class="badge badge-light" id="DustPM25">4</span>
             </button>
           </div>
         </div>
@@ -104,8 +118,66 @@
     </div>
   </div>
   <div id='hiddenDiv'>
-
   </div>
+
+  <!-- RFID List-->
+  <div class="container">
+    <div class="jumbotron">
+      <h1 class="display-4">RFID查詢</h1>
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          門禁人員出入查詢
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="namelist">
+          <a class="dropdown-item" href="#">Action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </div>
+      <table class="table" id="tableRFIDCardSearch">
+        <thead>
+          <tr>
+            <th scope="col">Card ID</th>
+            <th scope="col">姓名</th>
+            <th scope="col">時間</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>1970-1-1</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RFID -->
+  <div class="container">
+    <div class="jumbotron">
+      <h1 class="display-4">PM 2.5</h1>
+      <table class="table" id="tablePM25">
+        <thead>
+          <tr>
+            <th scope="col">時間</th>
+            <th scope="col">ug/m3</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1</th>
+            <td>1970-1-1</td>
+            <td>0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -131,7 +203,6 @@
     var database = firebase.database();
 
     $(document).ready(function () {
-      console.log("ready!");
       var relayRef = database.ref('iot0901/relay');
       relayRef.on('value', function (snapshot) {
         var relayVal = snapshot.val();
@@ -142,7 +213,7 @@
           $('#openBtn').removeClass('btn-secondary').addClass('btn-success');
           $('#closeBtn').removeClass('btn-danger').addClass('btn-secondary');
         }
-        console.log('relayVal : ' + relayVal);
+        //        console.log('relayVal : ' + relayVal);
       });
 
       $('#openBtn').click(function () {
@@ -159,6 +230,7 @@
       setupFirebaseSensor('iot0901/Humidity');
       setupFirebaseSensor('iot0901/Sound_LED');
       setupFirebaseSensor('iot0901/Window');
+      setupFirebaseSensor('iot0901/DustPM25');
 
       function setupFirebaseSensor(realtimePath) {
         var relayRef = database.ref(realtimePath);
@@ -174,7 +246,7 @@
       $('#tableRFIDCard tbody').empty();
 
       // order by value
-//      var recordsRef = database.ref('iot0901/InRecords/1d_9_5d_f4_');
+      //      var recordsRef = database.ref('iot0901/InRecords/1d_9_5d_f4_');
       // var recordsRef = database.ref('iot0901/InRecords');
       // var sortedRecords = recordsRef.orderByValue().limitToLast(2);
       // sortedRecords.on('value', function (childSnapshot, prevChildKey) {
@@ -203,13 +275,13 @@
       });
 
       function setupFirebaseRFID(realtimePath) {
-        console.log('setup realtimePath=' + realtimePath);
+        //        console.log('setup realtimePath=' + realtimePath);
         var recordsRef = database.ref(realtimePath);
         //var sortedRecords = recordsRef.orderByKey().limitToLast(20);
         var sortedRecords = recordsRef.orderByValue().limitToLast(3);
         sortedRecords.on('child_added', function (snapshot) {
           var addedData = snapshot.val();
-          console.log(addedData);
+          //          console.log(addedData);
           var timestamp = snapshot.val() || 0;
           var val = new Date(timestamp);
           var key = snapshot.ref.parent.getKey();
@@ -217,20 +289,86 @@
           // read card's owner (name) from hidden field
           var name = $('#' + key).val();
 
-          var newRowContent = "<tr><td>" + carId + "</td><td>" + name + "</td><td>" + getYYYYMMDD(val) + "</td></tr>";
+          var newRowContent = "<tr><td>" + carId + "</td><td>" + name + "</td><td>" + getYYYYMMDD(val) +
+            "</td></tr>";
           $('#tableRFIDCard tbody').append(newRowContent);
         });
       }
 
-      function getYYYYMMDD(d) {
-        return d.getFullYear() + " " +
-          ("00" + (d.getMonth() + 1)).slice(-2) + "/" +
-          ("00" + d.getDate()).slice(-2) + "/" +
-          ("00" + d.getHours()).slice(-2) + ":" +
-          ("00" + d.getMinutes()).slice(-2) + ":" +
-          ("00" + d.getSeconds()).slice(-2);
-      }
+      // function getYYYYMMDD(d) {
+      //   return d.getFullYear() + " " +
+      //     ("00" + (d.getMonth() + 1)).slice(-2) + "/" +
+      //     ("00" + d.getDate()).slice(-2) + "/" +
+      //     ("00" + d.getHours()).slice(-2) + ":" +
+      //     ("00" + d.getMinutes()).slice(-2) + ":" +
+      //     ("00" + d.getSeconds()).slice(-2);
+      // }
     });
+
+    function getYYYYMMDD(d) {
+      return d.getFullYear() + " " +
+        ("00" + (d.getMonth() + 1)).slice(-2) + "/" +
+        ("00" + d.getDate()).slice(-2) + "/" +
+        ("00" + d.getHours()).slice(-2) + ":" +
+        ("00" + d.getMinutes()).slice(-2) + ":" +
+        ("00" + d.getSeconds()).slice(-2);
+    }
+
+    $(document).ready(function () {
+      var realtimePath = 'iot0901/InRecords'
+      var nameRef = database.ref(realtimePath + "/name");
+      nameRef.on('value', function (snapshot) {
+        $('#namelist').empty();
+        $('#tableRFIDCardSearch tbody').empty();
+        var names = snapshot.val();
+        console.log(names);
+        for (Cid in names) {
+          $('<a class="dropdown-item" href="#' + Cid + '">' + names[Cid] + '</a>').prependTo('#namelist');
+        }
+        // setup event for dropdown item
+        $('.dropdown-menu a').click(function () {
+          var dropitemHref = $(this).attr('href');
+          var cardId = dropitemHref.substring(1);
+          console.log('cardId=' + cardId);
+          showCardInOut(cardId);
+        });
+      });
+
+      function showCardInOut(cardId) {
+        var recordRef = database.ref(realtimePath + "/" + cardId);
+        var sortedRecords = recordRef.orderByValue(); //.limitToLast(3);
+        sortedRecords.once('value', function (snapshot) {
+          $('#tableRFIDCardSearch tbody').empty();
+          var timeStamps = snapshot.val();
+          var cardId = snapshot.key;
+          for (key in timeStamps) {
+            var name = $('#' + cardId).val();
+            var val = new Date(timeStamps[key]);
+            var newRowContent = "<tr><td>" + cardId + "</td><td>" + name + "</td><td>" + getYYYYMMDD(val) +
+              "</td></tr>";
+            $('#tableRFIDCardSearch tbody').append(newRowContent);
+          }
+        });
+      }
+
+    })
+
+    $(document).ready(function () {
+      var realtimePath = 'iot0901/DustPM25S'
+      var nameRef = database.ref(realtimePath);
+      nameRef.on('value', function (snapshot) {
+        $('#tablePM25 tbody').empty();
+        var values = snapshot.val();
+        console.log(values)
+        for (key in values) {
+          var pmDate = new Date(values[key].timeStamp);
+          var pmValue = values[key].value;
+          var newRowContent = "<tr><td>" +  getYYYYMMDD(pmDate) + "</td><td>" + pmValue + "</td></tr>";
+          $('#tablePM25 tbody').append(newRowContent);
+        }
+        
+      });
+    })    
   </script>
 </body>
 
